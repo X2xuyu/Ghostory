@@ -40,7 +40,7 @@
         detail.rules = config.customRules;
       }
 
-      window.dispatchEvent(new CustomEvent('__instar_config', { detail }));
+      window.postMessage({ type: '__instar_config', config: detail }, '*');
     } catch (err) {
       console.warn('[InstarVision Bridge] Load error:', err);
     }
@@ -50,9 +50,10 @@
   loadAndPush();
 
   // ─── Listen for blocked notifications from MAIN world ─────────────
-  window.addEventListener('__instar_blocked', async (e) => {
+  window.addEventListener('message', async (e) => {
+    if (e.source !== window || !e.data || e.data.type !== '__instar_blocked') return;
     try {
-      const { count, entry } = e.detail;
+      const { count, entry } = e.data;
 
       // Update storage
       const result = await api.storage.local.get(STORAGE_KEY);
@@ -91,17 +92,13 @@
 
       // If enabled state changed, push to MAIN world
       if (newVal.enabled !== oldVal.enabled) {
-        window.dispatchEvent(new CustomEvent('__instar_config', {
-          detail: { enabled: newVal.enabled },
-        }));
+        window.postMessage({ type: '__instar_config', config: { enabled: newVal.enabled } }, '*');
       }
 
       // If rules changed, push to MAIN world
       if (JSON.stringify(newVal.customRules) !== JSON.stringify(oldVal.customRules)) {
         if (newVal.customRules) {
-          window.dispatchEvent(new CustomEvent('__instar_config', {
-            detail: { rules: newVal.customRules },
-          }));
+          window.postMessage({ type: '__instar_config', config: { rules: newVal.customRules } }, '*');
         }
       }
     }

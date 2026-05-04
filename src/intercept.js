@@ -135,11 +135,9 @@
 
     console.debug(`${EXTENSION_TAG} 🛡️ BLOCKED [${method}] ${matchInfo}`);
 
-    // Notify bridge (isolated world) via CustomEvent
+    // Notify bridge (isolated world) via window.postMessage to avoid Firefox Xray vision issues
     try {
-      window.dispatchEvent(new CustomEvent('__instar_blocked', {
-        detail: { count: blockedCount, entry },
-      }));
+      window.postMessage({ type: '__instar_blocked', count: blockedCount, entry }, '*');
     } catch { /* swallow */ }
   }
 
@@ -239,9 +237,10 @@
   }
 
   // ─── 4. Listen for config updates from bridge ─────────────────────
-  window.addEventListener('__instar_config', (e) => {
+  window.addEventListener('message', (e) => {
+    if (e.source !== window || !e.data || e.data.type !== '__instar_config') return;
     try {
-      const config = e.detail;
+      const config = e.data.config;
       if (config.enabled !== undefined) {
         enabled = config.enabled;
         console.debug(`${EXTENSION_TAG} Stealth mode: ${enabled ? 'ON 🟢' : 'OFF 🔴'}`);
@@ -259,15 +258,17 @@
   });
 
   // ─── 5. Expose query API for popup / devtools ─────────────────────
-  window.addEventListener('__instar_query', () => {
-    window.dispatchEvent(new CustomEvent('__instar_status', {
+  window.addEventListener('message', (e) => {
+    if (e.source !== window || !e.data || e.data.type !== '__instar_query') return;
+    window.postMessage({
+      type: '__instar_status',
       detail: {
         enabled,
         blockedCount,
         recentLog: blockedLog.slice(-10),
         rulesCount: blockRules.length,
       },
-    }));
+    }, '*');
   });
 
   // ─── Boot message ─────────────────────────────────────────────────
