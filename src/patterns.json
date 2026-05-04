@@ -1,0 +1,17 @@
+{
+  "version": "2026-05-04",
+  "block": [
+    { "type": "friendly_name", "pattern": "PolarisStoriesV3SeenMutation", "flags": "i", "note": "Primary story seen event" },
+    { "type": "body", "pattern": "viewSeenAt", "flags": "i", "note": "Seen timestamp in mutation body" },
+    { "type": "body", "pattern": "reelSeen", "flags": "i", "note": "Reel seen keyword" },
+    { "type": "body", "pattern": "story_view", "flags": "i", "note": "Story view impression" },
+    { "type": "body", "pattern": "PolarisStories.*Seen.*Mutation", "flags": "i", "note": "Catch renamed seen mutations" },
+    { "type": "url", "pattern": "\\/logging_client_events\\b", "flags": "i", "note": "Client event logger" },
+    { "type": "url", "pattern": "\\/video\\/unified_cvc\\/", "flags": "i", "note": "Video playback telemetry" },
+    { "type": "url", "pattern": "\\/ajax\\/bz\\b", "flags": "i", "note": "Beacon batch telemetry" }
+  ],
+  "whitelist": [
+    { "type": "friendly_name", "pattern": "PolarisStoriesV3ReelPageGalleryQuery", "note": "Story content loader - DO NOT BLOCK" },
+    { "type": "friendly_name", "pattern": "PolarisStoriesV3ReelPageGalleryPaginationQuery", "note": "Story pagination - DO NOT BLOCK" }
+  ]
+}

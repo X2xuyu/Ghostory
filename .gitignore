@@ -1,0 +1,18 @@
+# Test files and Burp captures (CONTAINS SENSITIVE DATA!)
+basa64end.txt
+non.txt
+parse_burp.py
+parse_burp2.py
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Extensions
+*.zip
+*.xpi
+*.crx
